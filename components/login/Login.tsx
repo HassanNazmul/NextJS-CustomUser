@@ -10,7 +10,7 @@ interface LoginFormProps {
     onSubmit: (email: string, password: string) => void;
 }
 
-const MIN_LOADING_TIME = 1000;
+const MIN_LOADING_TIME = 750;
 
 interface TextInputProps {
     id: string;
@@ -35,9 +35,11 @@ const TextInput: React.FC<TextInputProps> = ({
         <div className="mb-4">
             <label
                 htmlFor={id}
-                className={`block text-sm font-medium text-gray-700 mb-1 ${
-                    shake && error === "submit" && !value ? "animate-shake" : ""
-                }`}
+                // className={`block text-sm font-medium text-gray-700 mb-1 ${
+                //     shake && error === "submit" && !value ? "animate-shake" : ""
+                // }`}
+
+                className={`block text-sm font-medium text-gray-700 mb-1`}
             >
                 {label}
             </label>
@@ -97,8 +99,8 @@ const LoginForm: React.FC<LoginFormProps> = () => {
                         setRedirecting(true);
                         setTimeout(() => {
                             router.push("/dashboard");
-                        }, 2000); // Redirect after loading with delay
-                    }, 1000); // Show confirmation for a second before loading
+                        }, 1000); // Redirect after loading with delay
+                    }, 750); // Show confirmation for a second before loading
                 } else {
                     setError("submitFailed");
                     console.error("Login failed:", await response.json());
@@ -135,7 +137,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div
-                className="relative w-full max-w-lg bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-lg shadow-md flex flex-col justify-center items-center">
+                className="relative w-full max-w-lg bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-lg shadow-md flex flex-col justify-center items-center animate-fadeIn">
                 <div className="w-full flex-grow flex flex-col justify-center">
                     {/* Email Input */}
                     <TextInput

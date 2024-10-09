@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { getCookie } from "cookies-next"; // Install with `npm install cookies-next`
+import React, {useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
+import {deleteCookie, getCookie} from "cookies-next"; // Or localStorage
 
 const Dashboard: React.FC = () => {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);  // New loading state
 
     useEffect(() => {
         const token = getCookie("authToken");
@@ -18,18 +18,21 @@ const Dashboard: React.FC = () => {
         }
     }, [router]);
 
+    const handleLogout = () => {
+        deleteCookie("authToken");
+        router.push("/");
+    };
+
     if (isLoading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <p>Loading...</p>
-            </div>
-        );
+        return null;
     }
 
     return (
         <div>
-            <h1>Welcome to the Dashboard!</h1>
-            {/* Add more dashboard content here */}
+            <h1>Dashboard Page</h1>
+            <button onClick={handleLogout} className="mt-4 px-4 py-2 bg-red-500 text-white rounded">
+                Logout
+            </button>
         </div>
     );
 };
