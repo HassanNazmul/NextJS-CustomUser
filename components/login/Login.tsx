@@ -2,7 +2,7 @@
 
 import React, {useState} from "react";
 import {FaCheck, FaSignInAlt, FaTimes} from "react-icons/fa";
-import {loginUser} from "@/components/login/LoginApi";
+import {loginUser} from "@/components/login/LoginAPI";
 import {useRouter} from "next/navigation";
 import {setCookie} from "cookies-next";
 
