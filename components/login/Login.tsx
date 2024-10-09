@@ -1,13 +1,16 @@
 "use client";
 
-import React, {useState} from "react";
-import {FaSignInAlt, FaCheck, FaTimes} from "react-icons/fa";
+import React, { useState } from "react";
+import { FaSignInAlt, FaCheck, FaTimes } from "react-icons/fa";
+import { loginUser } from "@/components/login/LoginApi";
+import { useRouter } from "next/navigation";
+import { setCookie } from "cookies-next";
 
 interface LoginFormProps {
     onSubmit: (email: string, password: string) => void;
 }
 
-const MIN_LOADING_TIME = 2000;
+const MIN_LOADING_TIME = 1000;
 
 interface TextInputProps {
     id: string;
@@ -59,13 +62,15 @@ const TextInput: React.FC<TextInputProps> = ({
     );
 };
 
-const LoginForm: React.FC<LoginFormProps> = ({onSubmit}) => {
+const LoginForm: React.FC<LoginFormProps> = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [error, setError] = useState<string>("");
     const [shake, setShake] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [submitted, setSubmitted] = useState<boolean>(false);
+    const [redirecting, setRedirecting] = useState<boolean>(false);
+    const router = useRouter();
 
     const triggerShake = (): void => {
         setShake(true);
@@ -79,22 +84,36 @@ const LoginForm: React.FC<LoginFormProps> = ({onSubmit}) => {
 
             try {
                 await new Promise((resolve) => setTimeout(resolve, MIN_LOADING_TIME));
-                await onSubmit(email, password);
+                const response = await loginUser(email, password);
 
-                const timeElapsed = Date.now() - startTime;
-                const remainingTime = MIN_LOADING_TIME - timeElapsed;
-
-                setTimeout(() => {
+                if (response.ok) {
+                    const data = await response.json();
+                    setCookie("authToken", data.key, { maxAge: 3600 }); // Save token for 1 hour
+                    console.log("Login successful, token:", data.key);
                     setSubmitted(true);
                     setEmail("");
                     setPassword("");
-                    setIsLoading(false);
-                }, Math.max(remainingTime, 0));
+                    setTimeout(() => {
+                        setRedirecting(true);
+                        setTimeout(() => {
+                            router.push("/dashboard");
+                        }, 2000); // Redirect after loading with delay
+                    }, 1000); // Show confirmation for a second before loading
+                } else {
+                    setError("submitFailed");
+                    console.error("Login failed:", await response.json());
+                    triggerShake();
+                }
             } catch (error) {
                 console.error("Error during submission:", error);
                 setError("submitFailed");
                 triggerShake();
-                setIsLoading(false);
+            } finally {
+                const timeElapsed = Date.now() - startTime;
+                const remainingTime = MIN_LOADING_TIME - timeElapsed;
+                setTimeout(() => {
+                    setIsLoading(false);
+                }, Math.max(remainingTime, 0));
             }
         } else {
             setError("submit");
@@ -102,17 +121,20 @@ const LoginForm: React.FC<LoginFormProps> = ({onSubmit}) => {
         }
     };
 
-    const handleInputChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (
+    const handleInputChange = (field: "email" | "password") => (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
-        setter(e.target.value);
+        if (field === "email") {
+            setEmail(e.target.value);
+        } else {
+            setPassword(e.target.value);
+        }
         setError("");
     };
 
     return (
         <div className="flex items-center justify-center min-h-screen">
-            <div
-                className="relative w-full max-w-lg bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-lg shadow-md flex flex-col justify-center items-center">
+            <div className="relative w-full max-w-lg bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-lg shadow-md flex flex-col justify-center items-center">
                 <div className="w-full flex-grow flex flex-col justify-center">
                     {/* Email Input */}
                     <TextInput
@@ -122,7 +144,7 @@ const LoginForm: React.FC<LoginFormProps> = ({onSubmit}) => {
                         value={email}
                         error={error}
                         shake={shake}
-                        onChange={handleInputChange(setEmail)}
+                        onChange={handleInputChange("email")}
                     />
 
                     {/* Password Input */}
@@ -133,7 +155,7 @@ const LoginForm: React.FC<LoginFormProps> = ({onSubmit}) => {
                         value={password}
                         error={error}
                         shake={shake}
-                        onChange={handleInputChange(setPassword)}
+                        onChange={handleInputChange("password")}
                     />
 
                     {/* Submit Button */}
@@ -145,23 +167,23 @@ const LoginForm: React.FC<LoginFormProps> = ({onSubmit}) => {
                                 error === "submitFailed"
                                     ? "bg-red-500"
                                     : submitted
-                                        ? "bg-gray-500"
+                                        ? "bg-green-500"
                                         : "bg-indigo-500 hover:bg-indigo-600"
                             }`}
                             aria-label={submitted ? "Login submitted" : "Submit login"}
                         >
                             {isLoading ? (
                                 <>
-                                    <FaSignInAlt className="mr-2 animate-spin"/>
+                                    <FaSignInAlt className="mr-2 animate-spin" />
                                     <span className="animate-pulse">Logging in...</span>
                                 </>
                             ) : error === "submitFailed" ? (
                                 <>
-                                    <FaTimes className="mr-2"/> Login Failed
+                                    <FaTimes className="mr-2" /> Login Failed
                                 </>
                             ) : submitted ? (
                                 <>
-                                    <FaCheck className="mr-2"/> Logged In
+                                    <FaCheck className="mr-2" /> Logged In
                                 </>
                             ) : (
                                 <>
@@ -182,6 +204,15 @@ const LoginForm: React.FC<LoginFormProps> = ({onSubmit}) => {
                     </div>
                 </div>
             </div>
+            {redirecting && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-10 z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-md animate-fadeIn">
+                        <p className="text-lg font-medium text-gray-800 animate-pulse">
+                            Redirecting to dashboard...
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

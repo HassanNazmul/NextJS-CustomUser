@@ -1,9 +1,7 @@
-import Login from "@/components/login/Login";
-
 export default function Home() {
     return (
         <div>
-            <Login/>
+            <h1 className="text-9xl">This is HOME Page</h1>
         </div>
     );
 }
