@@ -79,6 +79,50 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         setTimeout(() => setShake(false), 400);
     };
 
+    // const handleSubmit = async (): Promise<void> => {
+    //     if (email && password) {
+    //         setIsLoading(true);
+    //         const startTime = Date.now();
+    //
+    //         try {
+    //             await new Promise((resolve) => setTimeout(resolve, MIN_LOADING_TIME));
+    //             const response = await loginUser(email, password);
+    //
+    //             if (response.ok) {
+    //                 const data = await response.json();
+    //                 setCookie("authToken", data.key, {maxAge: 3600}); // Save token for 1 hour
+    //                 console.log("Login successful, token:", data.key);
+    //                 setSubmitted(true);
+    //                 setEmail("");
+    //                 setPassword("");
+    //                 setTimeout(() => {
+    //                     setRedirecting(true);
+    //                     setTimeout(() => {
+    //                         router.push("/dashboard");
+    //                     }, 1000); // Redirect after loading with delay
+    //                 }, 750); // Show confirmation for a second before loading
+    //             } else {
+    //                 setError("submitFailed");
+    //                 console.error("Login failed:", await response.json());
+    //                 triggerShake();
+    //             }
+    //         } catch (error) {
+    //             console.error("Error during submission:", error);
+    //             setError("submitFailed");
+    //             triggerShake();
+    //         } finally {
+    //             const timeElapsed = Date.now() - startTime;
+    //             const remainingTime = MIN_LOADING_TIME - timeElapsed;
+    //             setTimeout(() => {
+    //                 setIsLoading(false);
+    //             }, Math.max(remainingTime, 0));
+    //         }
+    //     } else {
+    //         setError("submit");
+    //         triggerShake();
+    //     }
+    // };
+
     const handleSubmit = async (): Promise<void> => {
         if (email && password) {
             setIsLoading(true);
@@ -86,28 +130,26 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 
             try {
                 await new Promise((resolve) => setTimeout(resolve, MIN_LOADING_TIME));
-                const response = await loginUser(email, password);
 
-                if (response.ok) {
-                    const data = await response.json();
-                    setCookie("authToken", data.key, {maxAge: 3600}); // Save token for 1 hour
-                    console.log("Login successful, token:", data.key);
-                    setSubmitted(true);
-                    setEmail("");
-                    setPassword("");
+                // Directly get the response as JSON (since it's already parsed)
+                const data = await loginUser(email, password);
+
+                // No need to check response.ok, handle successful login directly
+                setCookie("authToken", data.key, { maxAge: 3600 });
+                console.log("Login successful, roles:", data.is_admin, data.is_staff, data.is_superuser);
+
+                // Handle the rest of the logic, like redirection
+                setSubmitted(true);
+                setEmail("");
+                setPassword("");
+                setTimeout(() => {
+                    setRedirecting(true);
                     setTimeout(() => {
-                        setRedirecting(true);
-                        setTimeout(() => {
-                            router.push("/dashboard");
-                        }, 1000); // Redirect after loading with delay
-                    }, 750); // Show confirmation for a second before loading
-                } else {
-                    setError("submitFailed");
-                    console.error("Login failed:", await response.json());
-                    triggerShake();
-                }
+                        router.push("/dashboard");
+                    }, 1000);
+                }, 750);
             } catch (error) {
-                console.error("Error during submission:", error);
+                console.error("Login failed:", error);
                 setError("submitFailed");
                 triggerShake();
             } finally {
@@ -122,6 +164,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
             triggerShake();
         }
     };
+
 
     const handleInputChange = (field: "email" | "password") => (
         e: React.ChangeEvent<HTMLInputElement>
