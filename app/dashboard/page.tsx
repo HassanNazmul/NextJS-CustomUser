@@ -29,7 +29,7 @@ const Dashboard: React.FC = () => {
 
     return (
         <div>
-            <h1>Dashboard Page</h1>
+            <h1 className="text-9xl">This is Dashboard Page</h1>
             <button onClick={handleLogout} className="mt-4 px-4 py-2 bg-red-500 text-white rounded">
                 Logout
             </button>
