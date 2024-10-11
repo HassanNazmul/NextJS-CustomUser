@@ -18,7 +18,7 @@ export async function loginUser(email: string, password: string) {
 
     // Verify if the user roles are included in the response
     if (!data.is_admin && !data.is_staff) {
-        throw new Error("Only admins, staff, and superusers are allowed to login.");
+        throw new Error("Only admins, staff, and superusers are allowed to loginX.");
     }
 
     // If the user has the required permissions, return the data
