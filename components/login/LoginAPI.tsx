@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/utils/config";
 
 export async function loginUser(email: string, password: string) {
     const response = await fetch(`${config.API_URL}/dj-rest-auth/login/`, {

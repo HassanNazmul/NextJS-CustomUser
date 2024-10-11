@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/utils/config";
 
 export async function getAllUser() {
     // Retrieve token from localStorage or any other place you are storing it

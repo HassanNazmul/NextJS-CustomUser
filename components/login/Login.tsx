@@ -5,6 +5,7 @@ import {FaCheck, FaSignInAlt, FaTimes} from "react-icons/fa";
 import {loginUser} from "@/components/login/LoginAPI";
 import {useRouter} from "next/navigation";
 import {setCookie} from "cookies-next";
+import logger from "@/utils/logger";
 
 interface LoginFormProps {
     onSubmit: (email: string, password: string) => void;
@@ -136,7 +137,9 @@ const LoginForm: React.FC<LoginFormProps> = () => {
 
                 // No need to check response.ok, handle successful login directly
                 setCookie("authToken", data.key, { maxAge: 3600 });
-                console.log("Login successful, roles:", data.is_admin, data.is_staff, data.is_superuser);
+
+                // Use logger to handle sensitive data logging
+                logger.log("Login successful, roles:", data.is_admin, data.is_staff, data.is_superuser);
 
                 // Handle the rest of the logic, like redirection
                 setSubmitted(true);
@@ -149,7 +152,8 @@ const LoginForm: React.FC<LoginFormProps> = () => {
                     }, 1000);
                 }, 750);
             } catch (error) {
-                console.error("Login failed:", error);
+                // Use logger to log errors
+                logger.error("Login failed:", error);
                 setError("submitFailed");
                 triggerShake();
             } finally {
