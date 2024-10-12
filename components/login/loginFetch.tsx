@@ -1,6 +1,6 @@
 export const loginFetch = async (username: string, password: string) => {
     try {
-        const response = await fetch('http://localhost:8000/dj-rest-auth/login/', {
+        const response = await fetch('/api/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -25,3 +25,26 @@ export const loginFetch = async (username: string, password: string) => {
         return null;
     }
 };
+
+// export const loginFetch = async (username: string, password: string) => {
+//     try {
+//     // Call the Next.js proxy route, which forwards the request to Django
+//     const response = await fetch('/api/auth/login', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({username, password}),
+//     });
+//
+//     if (!response.ok) {
+//         return null;  // Return null if login fails
+//     }
+//
+//     const data = await response.json();
+//     return {success: true, data};
+// } catch (error) {
+//     console.error('Error logging in:', error);
+//     return null;
+// }
+// };
