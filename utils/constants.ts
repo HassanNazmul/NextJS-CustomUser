@@ -7,6 +7,6 @@
 // };
 //
 // export const API_ENDPOINTS = {
-//     LOGIN: '/dj-rest-auth/login/',
+//     LOGIN: '/dj-rest-auth/loginX/',
 //     LOGOUT: '/dj-rest-auth/logout/',
 // };
