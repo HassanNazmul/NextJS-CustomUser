@@ -8,43 +8,31 @@ export const loginFetch = async (username: string, password: string) => {
             body: JSON.stringify({username, password}),
         });
 
+        // Check if the response was not OK (e.g., 4xx or 5xx status code)
         if (!response.ok) {
-            return null;  // Return null if login fails
+            const errorMessage = response.status === 401
+                ? 'Invalid username or password.'
+                : response.status === 403
+                    ? 'You are not allowed to log in.'
+                    : 'An error occurred during login. Please try again.';
+
+            // Log the error message to the console
+            console.error(`Login failed: ${errorMessage}`);
+            return {success: false, message: errorMessage};
         }
 
-        const data = await response.json();  // Parse the response
+        const data = await response.json();
 
-        // Check if the user's role is 'student', and prevent login if so
+        // Check if the user's role is 'student'
         if (data.is_student) {
+            console.error('Login failed: Students are not allowed to log in.');
             return {success: false, message: 'Students are not allowed to log in.'};
         }
 
-        return {success: true, data};  // Return the user data if the role is allowed
+        return {success: true, data};
     } catch (error) {
+        // Log the fetch error
         console.error('Error logging in:', error);
-        return null;
+        return {success: false, message: 'Network error. Please check your connection and try again.'};
     }
 };
-
-// export const loginFetch = async (username: string, password: string) => {
-//     try {
-//     // Call the Next.js proxy route, which forwards the request to Django
-//     const response = await fetch('/api/auth/login', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({username, password}),
-//     });
-//
-//     if (!response.ok) {
-//         return null;  // Return null if login fails
-//     }
-//
-//     const data = await response.json();
-//     return {success: true, data};
-// } catch (error) {
-//     console.error('Error logging in:', error);
-//     return null;
-// }
-// };

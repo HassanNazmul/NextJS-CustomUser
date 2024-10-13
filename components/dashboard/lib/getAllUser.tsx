@@ -1,5 +1,3 @@
-import config from "@/utils/config";
-
 export async function getAllUser() {
     // Retrieve token from localStorage or any other place you are storing it
     const token = localStorage.getItem("token");
@@ -9,7 +7,7 @@ export async function getAllUser() {
     }
 
     try {
-        const response = await fetch(`${config.API_URL}/api/users/`, {
+        const response = await fetch('/api/alluser', {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
