@@ -16,6 +16,12 @@ const nextConfig = {
                 source: '/api/auth/login',
                 destination: `${backendUrl}/dj-rest-auth/login/`, // The backend API URL is hidden
             },
+            {
+                // The source property defines the route that users will interact with
+                source: '/api/auth/logout',
+                // The destination property points to the backend API endpoint where the request should be redirected
+                destination: `${backendUrl}/dj-rest-auth/logout/`, // The backend API URL is hidden from the client
+            },
         ];
     },
 };
