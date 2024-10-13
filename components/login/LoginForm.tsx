@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useState} from "react";
-import {loginFetch} from "./loginFetch";
+import {loginFetch} from "./lib/loginFetch";
 import {useRouter} from "next/navigation";
 import {setCookie} from "cookies-next";
 

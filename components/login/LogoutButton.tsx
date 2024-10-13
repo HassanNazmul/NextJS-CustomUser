@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react';
-import logoutFetch from "@/components/login/logoutFetch";
+import logoutFetch from "@/components/login/lib/logoutFetch";
 import {deleteCookie} from "cookies-next";
 
 const LogoutButton = () => {
